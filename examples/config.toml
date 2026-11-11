@@ -1,0 +1,31 @@
+# ~/.config/ghb/config.toml  (or $XDG_CONFIG_HOME/ghb/config.toml)
+
+author = "@me"      # whose PRs; any GitHub login works
+days = 30           # default statistics window: 7, 30, 90 or 365
+# theme = "nord"    # any Textual theme; default is textual-dark
+
+# Actions bind a key to a command line. Items of `run` are str.format templates
+# over: number url title branch base repo path. A key shadows any built-in.
+#
+#   mode    "background" (default; output shown as a toast) or
+#           "suspend" (hand the terminal to the command, e.g. an editor)
+#   confirm ask y/n first                      (default false)
+#   refresh re-fetch afterwards                (default false)
+#   states  only for PRs in these states       (default: all of
+#           "open", "draft", "merged", "closed")
+
+[[actions]]
+key = "n"
+label = "nvim"
+run = ["nvim", "-c", "PRReview {number}"]
+mode = "suspend"
+states = ["open", "draft"]
+
+# Merge with a merge commit and delete the branch instead of the default squash.
+[[actions]]
+key = "m"
+label = "merge"
+run = ["gh", "pr", "merge", "{number}", "-R", "{repo}", "--merge", "--delete-branch"]
+confirm = true
+refresh = true
+states = ["open"]

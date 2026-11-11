@@ -1,0 +1,13 @@
+[project]
+name = "ghb-nvim"
+version = "0.1.0"
+description = "Example ghb plugin: open the selected PR in a Neovim PR viewer."
+requires-python = ">=3.13"
+dependencies = ["ghb"]
+
+[project.entry-points."ghb.actions"]
+nvim = "ghb_nvim:actions"
+
+[build-system]
+requires = ["uv_build>=0.11,<0.12"]
+build-backend = "uv_build"
