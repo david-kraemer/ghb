@@ -21,6 +21,9 @@ from ghb.actions import Action, Context
 from ghb.model import PullRequest, pull_requests
 from ghb.view import FILTERS, WINDOWS, View, cycled, header, layout, row, visible
 
+DEFAULT_THEME = "ansi-dark"
+"""Defer to the terminal's own 16-color palette; any Textual theme name overrides it."""
+
 
 class Board(App[None]):
     CSS = """
@@ -31,6 +34,11 @@ class Board(App[None]):
     DataTable > .datatable--cursor { background: $boost; text-style: bold; }
     DataTable > .datatable--hover { background: $background; }
     Footer { background: $background; }
+
+    /* ANSI themes: the terminal's palette, no truecolor and no alpha blending */
+    DataTable:ansi > .datatable--header { background: ansi_default; color: ansi_default; text-style: dim; }
+    DataTable:ansi > .datatable--cursor { background: ansi_default; color: ansi_default; text-style: reverse; }
+    DataTable:ansi > .datatable--hover { background: ansi_default; }
     """
 
     BINDINGS: ClassVar = [
@@ -47,8 +55,7 @@ class Board(App[None]):
         self.view = view
         self.context = context
         self.actions = {a.key: a for a in actions}
-        if theme:
-            self.theme = theme
+        self.theme = theme or DEFAULT_THEME
 
     def compose(self) -> ComposeResult:
         yield Static(id="header")
@@ -180,6 +187,7 @@ class Confirm(ModalScreen[bool]):
     Confirm { align: center middle; background: $background 60%; }
     Confirm Static { width: auto; }
     Confirm > Vertical { width: auto; max-width: 80%; height: auto; padding: 1 3; border: round $primary; background: $surface; }
+    Confirm:ansi { background: ansi_default; }
     """
     BINDINGS: ClassVar = [("y", "answer(True)", "yes"), ("n,escape", "answer(False)", "no")]
 

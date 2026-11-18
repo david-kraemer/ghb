@@ -2,7 +2,7 @@
 
 author = "@me"      # whose PRs; any GitHub login works
 days = 30           # default statistics window: 7, 30, 90 or 365
-# theme = "nord"    # any Textual theme; default is textual-dark
+# theme = "nord"    # any Textual theme; default "ansi-dark" uses the terminal's palette
 
 # Actions bind a key to a command line. Items of `run` are str.format templates
 # over: number url title branch base repo path. A key shadows any built-in.

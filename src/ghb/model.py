@@ -8,6 +8,15 @@ from datetime import datetime
 from enum import StrEnum
 from typing import Any
 
+__all__ = [
+    "Checks",
+    "PullRequest",
+    "Review",
+    "State",
+    "pull_request",
+    "pull_requests",
+]
+
 
 class State(StrEnum):
     DRAFT = "draft"
@@ -103,32 +112,33 @@ def state(raw: Mapping[str, Any]) -> State:
             return State.CLOSED
 
 
-_FAILED = frozenset({"FAILURE", "ERROR", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED", "STARTUP_FAILURE"})
-_WAITING = frozenset({"PENDING", "EXPECTED", "QUEUED", "IN_PROGRESS", "WAITING", "REQUESTED"})
-
-
 def checks(rollup: Iterable[Mapping[str, Any]]) -> Checks:
     """Collapse a status-check rollup: any failure dominates, then anything unfinished.
 
     ``CheckRun`` entries report ``status``/``conclusion``; legacy ``StatusContext``
     entries report a single ``state``.
     """
+
+    failed = frozenset({"FAILURE", "ERROR", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED", "STARTUP_FAILURE"})
+    waiting = frozenset({"PENDING", "EXPECTED", "QUEUED", "IN_PROGRESS", "WAITING", "REQUESTED"})
+
     outcomes = {c.get("conclusion") or c.get("state") or c.get("status") or "" for c in rollup}
     if not outcomes:
         return Checks.NONE
-    if outcomes & _FAILED:
+    if outcomes & failed:
         return Checks.FAILING
-    if outcomes & _WAITING or "" in outcomes:
+    if outcomes & waiting or "" in outcomes:
         return Checks.PENDING
     return Checks.PASSING
 
 
 def review(decision: str) -> Review:
-    return {
+    outcomes = {
         "APPROVED": Review.APPROVED,
         "CHANGES_REQUESTED": Review.CHANGES,
         "REVIEW_REQUIRED": Review.REQUIRED,
-    }.get(decision, Review.NONE)
+    }
+    return outcomes.get(decision, Review.NONE)
 
 
 def timestamp(text: str | None) -> datetime | None:

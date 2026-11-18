@@ -72,7 +72,7 @@ See [`examples/config.toml`](examples/config.toml).
 ```toml
 author = "@me"
 days = 30
-theme = "nord"   # any Textual theme
+theme = "nord"   # any Textual theme; default "ansi-dark" uses the terminal's palette
 
 [[actions]]
 key = "n"
